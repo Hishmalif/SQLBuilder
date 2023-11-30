@@ -11,13 +11,9 @@ public class Field {
     private final int tableId;
     private Function function;
 
-    public String getShortFieldName(final Query query) {
-        return String.format("%s.%s", query.getTables().get(tableId).getShortTableName(), getName());
-    }
-
-    public String getLongFieldName(final Query query) {
-        return String.format("%s%s",getFunction(query), getAlias());
-    }
+//    public String getLongFieldName(final Query query) {
+//        return String.format("%s%s",getFunction(query), getAlias());
+//    }
 
     /**
      * Build alias if it not null
@@ -32,11 +28,11 @@ public class Field {
     /**
      * Build function if not null
      */
-    private String getFunction(final Query query) {
-        if (function != null) {
-            return function.getFunctionName(query, getShortFieldName(query));
-        } else {
-            return getShortFieldName(query);
-        }
-    }
+//    private String getFunction(final Query query) {
+//        if (function != null) {
+//            return function.getFunctionName(query, getShortFieldName(query));
+//        } else {
+//            return getShortFieldName(query);
+//        }
+//    }
 }

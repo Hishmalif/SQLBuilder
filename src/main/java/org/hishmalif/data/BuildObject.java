@@ -1,7 +1,7 @@
 package org.hishmalif.data;
 
-import org.hishmalif.data.enums.BuildType;
 import lombok.Data;
+import org.hishmalif.data.enums.BuildType;
 
 import java.util.List;
 

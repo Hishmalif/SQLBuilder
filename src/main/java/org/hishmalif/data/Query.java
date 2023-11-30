@@ -1,7 +1,7 @@
 package org.hishmalif.data;
 
-import org.hishmalif.data.enums.IntersectType;
 import lombok.Data;
+import org.hishmalif.data.enums.IntersectType;
 
 import java.util.Map;
 

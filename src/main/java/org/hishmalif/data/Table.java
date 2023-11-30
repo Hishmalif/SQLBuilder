@@ -11,10 +11,6 @@ public class Table {
     private int position;
     private int joinCondition;
 
-    public String getShortTableName() {
-        return alias != null ? alias : name;
-    }
-
     public String getLongTableName(boolean writeSchema) {
         if (writeSchema && schema != null) {
             return String.format("%s.%s", getSchema(), getName());
