@@ -1,13 +1,15 @@
-import org.hishmalif.QueryBuilder;
+import org.hishmalif.Builder;
 import org.hishmalif.data.*;
 import org.junit.jupiter.api.*;
 import org.hishmalif.data.enums.*;
+import org.hishmalif.QueryBuilder;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class QueryBuilderTest {
     private Query queryOne;
@@ -77,7 +79,7 @@ public class QueryBuilderTest {
         // Act
         final String result = builder.getSorts(sortsId);
         // Assert
-        Assertions.assertEquals("order by d.shop_id desc, s.name asc", result);
+        assertEquals("order by d.shop_id desc, s.name asc", result);
     }
 
     @Test
@@ -88,7 +90,7 @@ public class QueryBuilderTest {
         // Act
         final String result = builder.getSorts(sortsId);
         // Assert
-        Assertions.assertEquals("order by d.shop_id desc", result);
+        assertEquals("order by d.shop_id desc", result);
     }
 
     @Test
@@ -100,7 +102,7 @@ public class QueryBuilderTest {
         // Act
         final String result = builder.getSorts(sortsId);
         // Assert
-        Assertions.assertEquals("order by d.shop_id, s.name", result);
+        assertEquals("order by d.shop_id, s.name", result);
     }
 
     @Test
@@ -117,7 +119,7 @@ public class QueryBuilderTest {
         // Act
         final String result = builder.getSorts(sortsId);
         // Assert
-        Assertions.assertEquals("order by d.shop_id", result);
+        assertEquals("order by d.shop_id", result);
     }
 
     @Test
@@ -128,23 +130,31 @@ public class QueryBuilderTest {
         // Act
         final String result = builder.getSorts(sortsId);
         // Assert
-        Assertions.assertEquals("", result);
+        assertEquals("", result);
     }
 
     @Test
     @DisplayName("Getting a short name from a field")
-    public void getShortNameFromFiled() {
-        //Arrange
-
-        // Act
-
+    public void testShortNameFromFiled() {
+        //Act
+        String shortName = builder.getShortFieldName(queryOne.getFields().get(1));
         // Assert
-
+        assertEquals("d.shop_id", shortName);
     }
 
     @Test
-    @DisplayName("Getting sorting list with two fields")
-    public void getSortListWithTwoFields() {
+    @DisplayName("Getting a short name from a incorrect field")
+    public void testShortNameFromIncorrectField() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                builder.getShortFieldName(queryOne.getFields().get(161101)));
+        // Assert
+        assertEquals("Incorrect field id!", exception.getMessage());
+    }
 
+    @Test
+    @DisplayName("Test building select query object")
+    public void testBuildSelectQuery() {
+        System.out.println(builder.build());
     }
 }

@@ -14,22 +14,4 @@ public class Function {
     private final FunctionName name;
     private int groupsId;
     private List<Integer> sortsId;
-
-//    public String getFunctionName(final Query query, final String filedName) {
-//        if (getType().equals(FunctionType.WINDOW)) {
-//            return String.format("%s over (%s%s)", getFunctionName(filedName), getGroups(query), getSorts(query));
-//        }
-//        return getFunctionName(filedName);
-//    }
-
-    /**
-     * Build function name. (With field name)
-     */
-    private String getFunctionName(final String filedName) {
-        if (getName().isNeedField()) {
-            return String.format("%s(%s)", getName().getValue(), filedName);
-        } else {
-            return String.format("%s()", getName().getValue());
-        }
-    }
 }

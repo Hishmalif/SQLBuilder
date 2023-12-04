@@ -11,10 +11,6 @@ public class Field {
     private final int tableId;
     private Function function;
 
-//    public String getLongFieldName(final Query query) {
-//        return String.format("%s%s",getFunction(query), getAlias());
-//    }
-
     /**
      * Build alias if it not null
      */
