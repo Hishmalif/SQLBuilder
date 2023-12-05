@@ -40,9 +40,9 @@ public class QueryBuilderTest {
         // Init fields
         final Map<Integer, Field> fieldMap = new HashMap<>();
         Field fieldOne = new Field(1, "shop_id", 1, 2);
-        Field fieldTwo = new Field(2, "name", 2, 1);
+        Field fieldTwo = new Field(2, "name", 3, 1);
         fieldTwo.setAlias("shop_name");
-        Field fieldThree = new Field(3, "amount", 3, 2);
+        Field fieldThree = new Field(3, "amount", 2, 2);
         fieldThree.setAlias("sum_amount");
         fieldThree.setFunction(new Function(FunctionType.AGGREGATE, FunctionName.SUM));
         fieldMap.put(fieldOne.getId(), fieldOne);
@@ -59,6 +59,13 @@ public class QueryBuilderTest {
         sortMap.put(sortOne.getId(), sortOne);
         sortMap.put(sortTwo.getId(), sortTwo);
         queryOne.setSorts(sortMap);
+
+        // Init group
+        final Map<Integer, Group> groupMap = new HashMap<>();
+        Group groupOne = new Group(1);
+        groupOne.setFieldsId(List.of(1));
+        groupMap.put(groupOne.getId(), groupOne);
+        queryOne.setGroups(groupMap);
 
         // Init builder
         builder = new QueryBuilder(queryOne, BuildType.SELECT, true);
@@ -134,7 +141,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @DisplayName("Getting a short name from a field")
+    @DisplayName("Test a short name from a field")
     public void testShortNameFromFiled() {
         //Act
         String shortName = builder.getShortFieldName(queryOne.getFields().get(1));
@@ -143,7 +150,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @DisplayName("Getting a short name from a incorrect field")
+    @DisplayName("Test a short name from a incorrect field")
     public void testShortNameFromIncorrectField() {
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
@@ -155,6 +162,10 @@ public class QueryBuilderTest {
     @Test
     @DisplayName("Test building select query object")
     public void testBuildSelectQuery() {
+        queryOne.getFields().put(4, new Field(4, "*", 4, 1));
+        queryOne.getFields().get(4).setFunction(new Function(FunctionType.WINDOW, FunctionName.COUNT));
+        queryOne.getFields().get(4).getFunction().setSortsId(List.of(1));
+        queryOne.getFields().get(4).getFunction().setGroupsId(1);
         System.out.println(builder.build());
     }
 }

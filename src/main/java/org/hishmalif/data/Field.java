@@ -12,23 +12,14 @@ public class Field {
     private Function function;
 
     /**
-     * Build alias if it not null
+     * Returns the alias of the object, if not null.
+     *
+     * @return The alias of the object, or an empty string if the alias is null.
      */
-    private String getAlias() {
+    public String getAlias() {
         if (alias == null) {
             return "";
         }
         return " as " + alias;
     }
-
-    /**
-     * Build function if not null
-     */
-//    private String getFunction(final Query query) {
-//        if (function != null) {
-//            return function.getFunctionName(query, getShortFieldName(query));
-//        } else {
-//            return getShortFieldName(query);
-//        }
-//    }
 }
