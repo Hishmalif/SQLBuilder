@@ -1,11 +1,14 @@
 package org.hishmalif.data;
 
-import lombok.Data;
+import lombok.*;
 import org.hishmalif.data.enums.IntersectType;
 
 import java.util.Map;
 
 @Data
+@Builder(toBuilder = true)
+@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Query {
     private final int id;
     private boolean allFieldsAfter;

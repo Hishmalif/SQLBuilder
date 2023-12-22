@@ -1,74 +1,83 @@
-import org.hishmalif.Builder;
+import org.hishmalif.builders.*;
 import org.hishmalif.data.*;
 import org.junit.jupiter.api.*;
 import org.hishmalif.data.enums.*;
-import org.hishmalif.QueryBuilder;
 
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class QueryBuilderTest {
     private Query queryOne;
-    private QueryBuilder builder;
+    private EntityBuilder entityBuilder;
 
     @BeforeEach
     protected void init() {
-        // Init query
-        queryOne = new Query(1);
-        queryOne.setIntersectType(IntersectType.NONE);
-        queryOne.setAllFieldsAfter(true);
-
-        // Init tables
+        //  Init tables
         final Map<Integer, Table> tableMap = new HashMap<>();
-        Table tableOne = new Table(1, "shops");
-        tableOne.setSchema("public");
-        tableOne.setPosition(1);
-        tableOne.setAlias("s");
-        Table tableTwo = new Table(2, "documents");
-        tableTwo.setSchema("public");
-        tableTwo.setPosition(2);
-        tableTwo.setAlias("d");
-        tableTwo.setJoinCondition(1); //TODO Is not work now
+        Table tableOne = new Table(1, "shops").toBuilder()
+                .schema("public")
+                .position(1)
+                .alias("s")
+                .build();
+        Table tableTwo = new Table(2, "documents").toBuilder()
+                .schema("public")
+                .position(2)
+                .alias("d")
+                .joinCondition(1) //TODO Is not work now
+                .build();
         tableMap.put(tableOne.getId(), tableOne);
         tableMap.put(tableTwo.getId(), tableTwo);
-        queryOne.setTables(tableMap);
 
-        // Init fields
+        //  Init fields
         final Map<Integer, Field> fieldMap = new HashMap<>();
-        Field fieldOne = new Field(1, "shop_id", 1, 2);
-        Field fieldTwo = new Field(2, "name", 3, 1);
-        fieldTwo.setAlias("shop_name");
-        Field fieldThree = new Field(3, "amount", 2, 2);
-        fieldThree.setAlias("sum_amount");
-        fieldThree.setFunction(new Function(FunctionType.AGGREGATE, FunctionName.SUM));
+        Field fieldOne = new Field(1, "shop_id", 1).toBuilder()
+                .position(1)
+                .build();
+        Field fieldTwo = new Field(2, "name", 2).toBuilder()
+                .position(2)
+                .alias("shop_name")
+                .build();
+        Field fieldThree = new Field(3, "amount", 2).toBuilder()
+                .position(3)
+                .alias("sum_amount")
+                .filedFunction(new FiledFunction(FunctionType.AGGREGATE, FunctionName.SUM))
+                .build();
         fieldMap.put(fieldOne.getId(), fieldOne);
         fieldMap.put(fieldTwo.getId(), fieldTwo);
         fieldMap.put(fieldThree.getId(), fieldThree);
-        queryOne.setFields(fieldMap);
 
-        // Init sorts
+        //   Init sorts
         final Map<Integer, Sort> sortMap = new HashMap<>();
-        Sort sortOne = new Sort(1, 1);
-        sortOne.setType(SortType.DESC);
-        Sort sortTwo = new Sort(2, 2);
-        sortTwo.setType(SortType.ASC);
+        Sort sortOne = new Sort(1, 1).toBuilder()
+                .build();
+        Sort sortTwo = new Sort(2, 2).toBuilder()
+                .type(SortType.DESC)
+                .build();
         sortMap.put(sortOne.getId(), sortOne);
         sortMap.put(sortTwo.getId(), sortTwo);
-        queryOne.setSorts(sortMap);
 
         // Init group
         final Map<Integer, Group> groupMap = new HashMap<>();
-        Group groupOne = new Group(1);
-        groupOne.setFieldsId(List.of(1));
+        Group groupOne = new Group(1).toBuilder()
+                .fieldsId(List.of(1))
+                .build();
         groupMap.put(groupOne.getId(), groupOne);
-        queryOne.setGroups(groupMap);
 
-        // Init builder
-        builder = new QueryBuilder(queryOne, BuildType.SELECT, true);
+        // Init query
+        queryOne = new Query(1).toBuilder()
+                .allFieldsAfter(true)
+                .intersectType(IntersectType.NONE)
+                .tables(tableMap)
+                .fields(fieldMap)
+                .sorts(sortMap)
+                .groups(groupMap)
+                .build();
+
+        // Init builders
+        entityBuilder = new EntityBuilderImpl(queryOne);
     }
 
     @AfterEach
@@ -79,93 +88,38 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @DisplayName("Test build sorts for two fields")
-    protected void testBuildSortsForTwoField() {
-        //Arrange
-        final List<Integer> sortsId = queryOne.getSorts().keySet().stream().toList();
-        // Act
-        final String result = builder.getSorts(sortsId);
-        // Assert
-        assertEquals("order by d.shop_id desc, s.name asc", result);
+    @DisplayName("TestShortTableName")
+    public void testShortTableName() {
+        assertEquals(entityBuilder.getTableName(1), "s");
     }
 
     @Test
-    @DisplayName("Test build sort for one field")
-    protected void testBuildSortForOneField() {
-        //Arrange
-        final List<Integer> sortsId = List.of(queryOne.getSorts().get(1).getId());
-        // Act
-        final String result = builder.getSorts(sortsId);
-        // Assert
-        assertEquals("order by d.shop_id desc", result);
+    @DisplayName("TestLongTableName")
+    public void testLongTableName() {
+        assertEquals(entityBuilder.getFullTableName(2), "\"public\".\"documents\" AS d");
     }
 
     @Test
-    @DisplayName("Test build sorts for two fields without type")
-    protected void testBuildSortsForTwoFieldWithoutType() {
-        //Arrange
-        queryOne.getSorts().values().forEach(sort -> sort.setType(null));
-        final List<Integer> sortsId = queryOne.getSorts().keySet().stream().toList();
-        // Act
-        final String result = builder.getSorts(sortsId);
-        // Assert
-        assertEquals("order by d.shop_id, s.name", result);
+    @DisplayName("TestSortWithOneField")
+    public void testSortWithOneField() {
+        assertEquals(entityBuilder.getSorts(List.of(1)), "ORDER_BY s.\"shop_id\"");
     }
 
     @Test
-    @DisplayName("Test build sort for one field without type")
-    protected void testBuildSortsForOneFieldWithoutType() {
-        //Arrange
-        final List<Integer> sortsId = queryOne.getSorts().values().stream()
-                .filter(sort -> sort.getId() == 1)
-                .map(sort -> {
-                    sort.setType(null);
-                    return sort.getId();
-                })
-                .toList();
-        // Act
-        final String result = builder.getSorts(sortsId);
-        // Assert
-        assertEquals("order by d.shop_id", result);
+    @DisplayName("TestSortWithTwoField")
+    public void testSortWithTwoField() {
+        assertEquals(entityBuilder.getSorts(List.of(1,2)), "ORDER_BY s.\"shop_id\", d.\"name\" DESC");
     }
 
     @Test
-    @DisplayName("Test build sort without sort list")
-    protected void testBuildSortWithoutList() {
-        //Arrange
-        final List<Integer> sortsId = new ArrayList<>();
-        // Act
-        final String result = builder.getSorts(sortsId);
-        // Assert
-        assertEquals("", result);
+    @DisplayName("TestShortField")
+    public void testShortField() {
+        assertEquals(entityBuilder.getFieldName(2), "d.\"name\"");
     }
 
-    @Test
-    @DisplayName("Test a short name from a field")
-    public void testShortNameFromFiled() {
-        //Act
-        String shortName = builder.getShortFieldName(queryOne.getFields().get(1));
-        // Assert
-        assertEquals("d.shop_id", shortName);
-    }
-
-    @Test
-    @DisplayName("Test a short name from a incorrect field")
-    public void testShortNameFromIncorrectField() {
-        //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                builder.getShortFieldName(queryOne.getFields().get(161101)));
-        // Assert
-        assertEquals("Incorrect field id!", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Test building select query object")
-    public void testBuildSelectQuery() {
-        queryOne.getFields().put(4, new Field(4, "*", 4, 1));
-        queryOne.getFields().get(4).setFunction(new Function(FunctionType.WINDOW, FunctionName.COUNT));
-        queryOne.getFields().get(4).getFunction().setSortsId(List.of(1));
-        queryOne.getFields().get(4).getFunction().setGroupsId(1);
-        System.out.println(builder.build());
-    }
+//    @Test
+//    @DisplayName("TestLongFieldName")
+//    public void testLongFieldName() {
+//        System.out.println(entityBuilder.getFullFieldName(1));
+//    }
 }

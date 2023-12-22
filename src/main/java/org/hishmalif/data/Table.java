@@ -1,8 +1,11 @@
 package org.hishmalif.data;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@Builder(toBuilder = true)
+@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Table {
     private final int id;
     private final String name;
@@ -11,11 +14,7 @@ public class Table {
     private int position;
     private int joinCondition;
 
-    public String getLongTableName(boolean writeSchema) {
-        if (writeSchema && schema != null) {
-            return String.format("%s.%s", getSchema(), getName());
-        } else {
-            return getName();
-        }
+    public String getAlias() {
+        return alias != null ? alias : name;
     }
 }
