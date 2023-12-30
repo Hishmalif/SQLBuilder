@@ -6,6 +6,7 @@ public enum QueryConstants {
     OVER,
     PARTITION_BY,
     FROM,
+    JOIN,
     ON,
     WHERE,
     AND,

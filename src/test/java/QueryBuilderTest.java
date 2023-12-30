@@ -3,6 +3,7 @@ import org.hishmalif.data.*;
 import org.junit.jupiter.api.*;
 import org.hishmalif.data.enums.*;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class QueryBuilderTest {
     @BeforeEach
     protected void init() {
         //  Init tables
-        final Map<Integer, Table> tableMap = new HashMap<>();
+        Map<Integer, Table> tableMap = new HashMap<>();
         Table tableOne = new Table(1, "shops").toBuilder()
                 .schema("public")
                 .position(1)
@@ -32,7 +33,7 @@ public class QueryBuilderTest {
         tableMap.put(tableTwo.getId(), tableTwo);
 
         //  Init fields
-        final Map<Integer, Field> fieldMap = new HashMap<>();
+        Map<Integer, Field> fieldMap = new HashMap<>();
         Field fieldOne = new Field(1, "shop_id", 1).toBuilder()
                 .position(1)
                 .build();
@@ -50,7 +51,7 @@ public class QueryBuilderTest {
         fieldMap.put(fieldThree.getId(), fieldThree);
 
         //   Init sorts
-        final Map<Integer, Sort> sortMap = new HashMap<>();
+        Map<Integer, Sort> sortMap = new HashMap<>();
         Sort sortOne = new Sort(1, 1).toBuilder()
                 .build();
         Sort sortTwo = new Sort(2, 2).toBuilder()
@@ -60,11 +61,22 @@ public class QueryBuilderTest {
         sortMap.put(sortTwo.getId(), sortTwo);
 
         // Init group
-        final Map<Integer, Group> groupMap = new HashMap<>();
+        Map<Integer, Group> groupMap = new HashMap<>();
         Group groupOne = new Group(1).toBuilder()
                 .fieldsId(List.of(1))
                 .build();
         groupMap.put(groupOne.getId(), groupOne);
+
+        // Init conditions
+        List<ConditionList> conditionLists = new ArrayList<>();
+        Condition condition = new Condition(1,"=","shop_id");
+        Condition condition1 = new Condition(2,"=","amount");
+        Condition condition2 = new Condition(3,"=","amount");
+        ConditionList conditionList = new ConditionList(ConditionType.JOIN);
+        conditionList.getConditions().add(condition);
+        conditionList.getConditions().add(condition1);
+        conditionList.getConditions().add(condition2);
+        conditionLists.add(conditionList);
 
         // Init query
         queryOne = new Query(1).toBuilder()
@@ -74,6 +86,7 @@ public class QueryBuilderTest {
                 .fields(fieldMap)
                 .sorts(sortMap)
                 .groups(groupMap)
+                .conditionsList(conditionLists)
                 .build();
 
         // Init builders

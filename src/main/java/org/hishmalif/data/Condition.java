@@ -1,8 +1,4 @@
 package org.hishmalif.data;
 
-import lombok.Data;
-
-@Data
-public class Condition {
-
+public record Condition(int fieldId, String operator, String value) {
 }
